@@ -1,4 +1,4 @@
-import math.random
+import math, random
 
 class SudokuGenerator:
     # creates the sudoku BOARD
