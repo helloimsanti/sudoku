@@ -1,5 +1,6 @@
 import math, random
 
+
 class SudokuGenerator:
     # creates the sudoku BOARD
     # ROW_LENGTH is always gonna be 9
