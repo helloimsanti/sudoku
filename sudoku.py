@@ -8,6 +8,8 @@ if __name__ == '__main__':
     # sudoku_gen = SudokuGenerator()
     board = Board()
 
+    # I'll leave the background color white for now
+    # unless you guys want to change it.
     board.SCREEN.fill((255, 255, 255))
     pygame.display.update()
 
