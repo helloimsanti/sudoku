@@ -28,7 +28,7 @@ class Board:
         self.SELECT_TOP = 0
         self.SELECT_WIDTH = 73
         self.SELECT_HEIGHT = 73
-        self.SELECT_BORDER_WIDTH = 2
+        self.SELECT_BORDER_WIDTH = 3
 
         # Game difficulty
         self.difficulty = difficulty
