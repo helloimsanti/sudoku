@@ -1,3 +1,5 @@
+import pygame
+
 from sudoku_generator import *
 from board import *
 
