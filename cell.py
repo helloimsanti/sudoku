@@ -8,10 +8,10 @@ class Cell:
     self.screen = screen
 
   def set_cell_value(self, value):
-    pass
+    self.value = value
 
   def set_sketched_value(self, value):
-    pass
+    self.sketch = value
 
   def draw(self):
     pass
