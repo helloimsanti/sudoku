@@ -14,7 +14,9 @@ class Start:
         self.START_WIDTH = 660
         self.START_HEIGHT = 780
         self.START_SCREEN = pygame.display.set_mode((self.START_WIDTH, self.START_HEIGHT))
+        self.ICON = pygame.image.load('images/sudoku-icon.png')
         pygame.display.set_caption('Sudoku | START')
+        pygame.display.set_icon(self.ICON)
 
         # Sound settings
         self.MUSIC_VOL = 0.2
@@ -162,7 +164,9 @@ class Won:
         self.WIN_WIDTH = 660
         self.WIN_HEIGHT = 780
         self.WIN_SCREEN = pygame.display.set_mode((self.WIN_WIDTH, self.WIN_HEIGHT))
+        self.ICON = pygame.image.load('images/sudoku-icon.png')
         pygame.display.set_caption('Sudoku | You won!')
+        pygame.display.set_icon(self.ICON)
 
         # Sound settings
         self.MUSIC_VOL = 0.2
@@ -235,7 +239,9 @@ class Lose:
         self.LOSE_WIDTH = 660
         self.LOSE_HEIGHT = 780
         self.LOSE_SCREEN = pygame.display.set_mode((self.LOSE_WIDTH, self.LOSE_HEIGHT))
+        self.ICON = pygame.image.load('images/sudoku-icon.png')
         pygame.display.set_caption('Sudoku | You lost')
+        pygame.display.set_icon(self.ICON)
 
         # Sound settings
         self.MUSIC_VOL = 0.2
