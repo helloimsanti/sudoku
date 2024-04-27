@@ -16,7 +16,7 @@ class Board:
         self.MOVE_SFX = pygame.mixer.Sound('sfx/movement-blip.mp3')
         self.MOVE_SFX_VOL = 0.4
         self.RESET_SFX = pygame.mixer.Sound('sfx/reset-sfx.mp3')
-        self.RESET_SFX_VOL = 0.2
+        self.RESET_SFX_VOL = 0.1
 
         # Grid settings
         self.SQUARE_SIZE = 220
