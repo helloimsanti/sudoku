@@ -11,7 +11,9 @@ class Board:
         self.WIDTH = 660
         self.HEIGHT = 780
         self.SCREEN = pygame.display.set_mode((self.WIDTH, self.HEIGHT))
+        self.ICON = pygame.image.load('images/sudoku-icon.png')
         pygame.display.set_caption('Sudoku')
+        pygame.display.set_icon(self.ICON)
 
         # Sound settings
         self.MOVE_SFX = pygame.mixer.Sound('sfx/movement-blip.mp3')
