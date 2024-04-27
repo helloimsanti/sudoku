@@ -6,7 +6,7 @@ from board import *
 
 if __name__ == '__main__':
     # sudoku_gen = SudokuGenerator()
-    # clock = pygame.time.Clock()
+    clock = pygame.time.Clock()
     board = Board()
 
     # I'll leave the background color white for now
@@ -15,13 +15,16 @@ if __name__ == '__main__':
     while True:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
-                pygame.quit()
                 sys.exit()
 
         board.SCREEN.fill(board.COLOR)
 
         board.draw()
+        board.menu()
         board.select()
+        board.click()
+
+        # print(pygame.mouse.get_pos())
 
         pygame.display.update()
-        # clock.tick(60)
+        clock.tick(12)
