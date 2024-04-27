@@ -399,4 +399,4 @@ def lose_main():
 if __name__ == '__main__':
     reset_game()
     # win_main()
-    lose_main()
+    # lose_main()
