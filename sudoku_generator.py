@@ -1,6 +1,5 @@
 import math, random
 
-
 class SudokuGenerator:
     # creates the sudoku BOARD
     # ROW_LENGTH is always gonna be 9
@@ -9,8 +8,8 @@ class SudokuGenerator:
     def __init__(self, ROW_LENGTH, REMOVED_CELLS):
         self.ROW_LENGTH = ROW_LENGTH
         self.REMOVED_CELLS = REMOVED_CELLS
-        self.BOARD = [[0 for x in range(9)] for y in range()]
-        self.BOX_LENGTH = math.sqrt(ROW_LENGTH)
+        self.BOARD = [[0 for x in range(9)] for y in range(9)]
+        self.BOX_LENGTH = int(math.sqrt(ROW_LENGTH))
 
     # returns the 2D array representing the BOARD
     def get_board(self):
@@ -21,7 +20,7 @@ class SudokuGenerator:
         for row in self.BOARD:
             print(' '.join(map(str, row)))
 
-    # determiens if value is in a row. It will iterate through that row
+    # determines if value is in a row. It will iterate through that row
     # in the 2D array and return False if the value is in the row
     def valid_in_row(self, row, num):
         for value in self.BOARD[row]:
@@ -37,11 +36,11 @@ class SudokuGenerator:
                 return False
         return True
 
-    # determiens if value is in its box. It will iterate through the whole box
+    # determines if value is in its box. It will iterate through the whole box
     # by using the 2D array and return False if the value is in the box
     def valid_in_box(self, row_start, col_start, num):
-        for i in range(row_start, row_start+2):
-            for j in range(col_start, col_start+2):
+        for i in range(row_start, row_start+3):
+            for j in range(col_start, col_start+3):
                 if self.BOARD[i][j] == num:
                     return False
         return True
@@ -71,18 +70,20 @@ class SudokuGenerator:
 
     # Fills a desired "box" with values without repeating or duplicating values
     def fill_box(self, row_start, col_start):
-        for i in range(row_start, row_start + 2):
-            for j in range(col_start, col_start + 2):
-                random_value = math.random.randint(1, 9)
-                if is_valid(i, j, random_value):
-                    self.BOARD[i][j] == random_value
+        for i in range(row_start, row_start + 3):
+            for j in range(col_start, col_start + 3):
+                while True:
+                    random_value = random.randint(1, 9)
+                    if self.is_valid(i, j, random_value):
+                        self.BOARD[i][j] = random_value
+                        break
 
     # Uses the previous fill_box() method three times in order to create the three boxes on the diagonal
     def fill_diagonal(self):
         row_start = 0
         column_start = 0
-        for i in range(2):
-            fill_box(row_start, column_start)
+        for i in range(3):
+            self.fill_box(row_start, column_start)
             row_start += 3
             column_start += 3
 
@@ -127,19 +128,10 @@ class SudokuGenerator:
 
         for i in range(self.REMOVED_CELLS):
             while True:
-                random_index = math.random.randint(0, 80)
+                random_index = random.randint(0, 80)
                 if flat_board[random_index] == 0:
                     continue
                 flat_board[random_index] = 0
                 break
 
         self.BOARD = [flat_board[i:i+9] for i in range(0, 81, 9)]
-
-    # Given from the instructions. Not to be changed at all.
-    def generate_sudoku(size, removed):
-        sudoku = SudokuGenerator(size, removed)
-        sudoku.fill_values()
-        BOARD = sudoku.get_board()
-        sudoku.remove_cells()
-        BOARD = sudoku.get_board()
-        return BOARD
