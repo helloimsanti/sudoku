@@ -1,4 +1,5 @@
 import pygame, sys
+from sudoku import start_main
 
 
 class Board:
@@ -148,7 +149,7 @@ class Board:
         pygame.draw.rect(self.SCREEN, self.EXIT_COLOR, exit_button_info)
         pygame.draw.rect(self.SCREEN, self.EXIT_BORDER_COLOR, exit_button_info, width=self.BUTTON_BORDER_WIDTH)
 
-        # Blit all menu buttons to the screen.
+        # Blit all "restart", "reset", and "exit" to the screen.
         self.SCREEN.blit(restart_button, (self.BUTTON_X + 12, self.BUTTON_Y + 20))
         self.SCREEN.blit(reset_button, ((self.BUTTON_X * 7) + 6, self.BUTTON_Y + 20))
         self.SCREEN.blit(exit_button, ((self.BUTTON_X * 13), self.BUTTON_Y + 20))
@@ -166,6 +167,7 @@ class Board:
             # Change the color again if the restart button is clicked.
             if mouse_click[0]:
                 self.RESTART_COLOR = (0, 145, 73)
+                start_main()
 
         else:
             self.RESTART_COLOR = (51, 255, 153)
@@ -206,7 +208,7 @@ class Board:
         been selected, the user can edit its value or
         sketched value."""
 
-        # Draws the select box
+        # Draws the select box.
         select_info = (self.SELECT_X, self.SELECT_Y, self.SELECT_WIDTH, self.SELECT_HEIGHT)
         pygame.draw.rect(self.SCREEN, self.SELECT_COLOR, select_info, width=self.SELECT_BORDER_WIDTH)
 
