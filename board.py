@@ -316,7 +316,6 @@ class Board:
         # The position of the mouse in rows and columns.
         mouse_row = (mouse_x // 73) + 1
         mouse_col = (mouse_y // 73) + 1
-        # mouse_box = [mouse_row, mouse_col]
 
         # Does not allow the select box to go into the menu section.
         if mouse_row in range(10) and mouse_col in range(10) and mouse_click[0]:
