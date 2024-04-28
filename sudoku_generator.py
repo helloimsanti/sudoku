@@ -1,5 +1,6 @@
 import math, random
 
+
 class SudokuGenerator:
     # creates the sudoku BOARD
     # ROW_LENGTH is always gonna be 9
@@ -39,8 +40,8 @@ class SudokuGenerator:
     # determines if value is in its box. It will iterate through the whole box
     # by using the 2D array and return False if the value is in the box
     def valid_in_box(self, row_start, col_start, num):
-        for i in range(row_start, row_start+3):
-            for j in range(col_start, col_start+3):
+        for i in range(row_start, row_start + 3):
+            for j in range(col_start, col_start + 3):
                 if self.BOARD[i][j] == num:
                     return False
         return True
@@ -87,10 +88,9 @@ class SudokuGenerator:
             row_start += 3
             column_start += 3
 
-
     # Given from the instructions. Not to be changed at all.
     def fill_remaining(self, row, col):
-        if (col >= self.ROW_LENGTH and row < self.ROW_LENGTH - 1):
+        if col >= self.ROW_LENGTH and row < self.ROW_LENGTH - 1:
             row += 1
             col = 0
         if row >= self.ROW_LENGTH and col >= self.ROW_LENGTH:
