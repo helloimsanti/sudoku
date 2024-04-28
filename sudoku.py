@@ -3,7 +3,6 @@ import pygame, sys
 from sudoku_generator import *
 from board import *
 
-
 pygame.init()
 
 
@@ -116,7 +115,8 @@ class Start:
                 # Change the color again if the easy button is clicked.
                 # Return true to start the game loop.
                 self.EASY_COLOR = (0, 145, 73)
-                return True
+                return [True, 'easy'] #returns a list of a boolean and difficulty to be used in main method
+
 
         else:
             self.EASY_COLOR = (153, 255, 204)
@@ -129,7 +129,7 @@ class Start:
             # Change the color again if the medium button is clicked.
             if mouse_click[0]:
                 self.MEDIUM_COLOR = (0, 145, 73)
-                return True
+                return [True, 'medium'] #returns a list of a boolean and difficulty to be used in main method
 
         else:
             self.MEDIUM_COLOR = (153, 255, 204)
@@ -143,7 +143,7 @@ class Start:
                 # Change the color again if the hard button is clicked.
                 # Return true to start the game loop.
                 self.HARD_COLOR = (0, 145, 73)
-                return True
+                return [True, 'hard'] #returns a list of a boolean and difficulty to be used in main method
 
         else:
             self.HARD_COLOR = (153, 255, 204)
@@ -155,7 +155,6 @@ class Start:
         font = pygame.font.Font(self.FONT, self.AUTHORS_FONT_SIZE)
         authors = font.render(message, True, self.FONT_COLOR)
         self.START_SCREEN.blit(authors, self.AUTHORS_POS)
-
 
 class Won:
     def __init__(self):
@@ -304,21 +303,108 @@ class Lose:
 
         else:
             self.RESTART_COLOR = (153, 255, 204)
+# method outside the main and other classes. this will make the generation of the sudoku board
+# more readable in the main method
 
 
-def game_main():
+def generate_sudoku(size, removed):
+    sudoku = SudokuGenerator(size, removed)
+    sudoku.fill_values()
+    solution_board = sudoku.get_board()
+    sudoku.remove_cells()
+    starting_board = sudoku.get_board()
+    # Solution board is the final board. Starting board is the board the user starts with.
+    return [solution_board, starting_board]
+
+
+def game_main(difficulty):
+    # add comparison process
     """Game main loop"""
 
-    board = Board()
+    board = Board(difficulty)
+    if difficulty == 'easy':
+        empty_cells = 30
+    elif difficulty == 'medium':
+        empty_cells = 40
+    else:
+        empty_cells = 50
+
+    boards = generate_sudoku(9, empty_cells)
 
     while True:
         clock = pygame.time.Clock()
 
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
+                # print(boards[1])
                 sys.exit()
 
-        board.draw()
+        keys_pressed = pygame.key.get_pressed()
+
+        if keys_pressed[pygame.K_1]:
+            array = board.SELECT_Y // 73
+            num = board.SELECT_X // 73
+
+            if boards[1][array][num] == 0 or boards[1][array][num] > 9:
+                boards[1][array][num] = 10
+
+        if keys_pressed[pygame.K_2]:
+            array = board.SELECT_Y // 73
+            num = board.SELECT_X // 73
+
+            if boards[1][array][num] == 0 or boards[1][array][num] > 9:
+                boards[1][array][num] = 20
+
+        if keys_pressed[pygame.K_3]:
+            array = board.SELECT_Y // 73
+            num = board.SELECT_X // 73
+
+            if boards[1][array][num] == 0 or boards[1][array][num] > 9:
+                boards[1][array][num] = 30
+
+        if keys_pressed[pygame.K_4]:
+            array = board.SELECT_Y // 73
+            num = board.SELECT_X // 73
+
+            if boards[1][array][num] == 0 or boards[1][array][num] > 9:
+                boards[1][array][num] = 40
+
+        if keys_pressed[pygame.K_5]:
+            array = board.SELECT_Y // 73
+            num = board.SELECT_X // 73
+
+            if boards[1][array][num] == 0 or boards[1][array][num] > 9:
+                boards[1][array][num] = 50
+
+        if keys_pressed[pygame.K_6]:
+            array = board.SELECT_Y // 73
+            num = board.SELECT_X // 73
+
+            if boards[1][array][num] == 0 or boards[1][array][num] > 9:
+                boards[1][array][num] = 60
+
+        if keys_pressed[pygame.K_7]:
+            array = board.SELECT_Y // 73
+            num = board.SELECT_X // 73
+
+            if boards[1][array][num] == 0 or boards[1][array][num] > 9:
+                boards[1][array][num] = 70
+
+        if keys_pressed[pygame.K_8]:
+            array = board.SELECT_Y // 73
+            num = board.SELECT_X // 73
+
+            if boards[1][array][num] == 0 or boards[1][array][num] > 9:
+                boards[1][array][num] = 80
+
+        if keys_pressed[pygame.K_9]:
+            array = board.SELECT_Y // 73
+            num = board.SELECT_X // 73
+
+            if boards[1][array][num] == 0 or boards[1][array][num] > 9:
+                boards[1][array][num] = 90
+
+        board.draw(boards[1])
 
         if board.menu():
             break
@@ -344,10 +430,15 @@ def start_main():
                 sys.exit()
 
         start.title()
-
-        if start.buttons():
-            pygame.mixer.music.stop()
-            break
+        # This try-except will set the difficulty of the game to selected diffculty
+        try:
+            response = start.buttons()
+            if response[0]:
+                difficulty = response[1]
+                pygame.mixer.music.stop()
+                return difficulty
+        except:
+            None
 
         start.authors()
 
@@ -357,13 +448,11 @@ def start_main():
 
 def reset_game():
     """Resets the game."""
-
-    start_main()
-    game_main()
+    return game_main(start_main())
 
 
 def win_main():
-    """This code is unreachable unitl we've implemented the RNG."""
+    """"""
 
     win = Won()
 
@@ -382,7 +471,7 @@ def win_main():
 
 
 def lose_main():
-    """This code is unreachable until we've implemented the RNG."""
+    """"""
 
     lose = Lose()
 
@@ -404,5 +493,3 @@ def lose_main():
 
 if __name__ == '__main__':
     reset_game()
-    # win_main()
-    # lose_main()
