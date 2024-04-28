@@ -1,3 +1,4 @@
+
 import pygame, sys
 from sudoku import start_main
 
@@ -169,6 +170,13 @@ class Board:
                     if num == 8:
                         h_spacing = 0
                         v_spacing += 73
+        count = 0
+        for row in board:
+            for value in row:
+                if value > 0:
+                    count += 1
+        if count == 81:
+            return True
 
     def menu(self):
         """Draws the menu at the bottom of the screen."""
@@ -304,5 +312,4 @@ class Board:
             # print('x, y:', [mouse_x, mouse_y], '\n')
             self.SELECT_X = (mouse_row * 73) - 73
             self.SELECT_Y = (mouse_col * 73) - 73
-            print(self.SELECT_X, self.SELECT_Y)
             self.MOVE_SFX.play()
