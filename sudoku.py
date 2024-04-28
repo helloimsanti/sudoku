@@ -115,7 +115,7 @@ class Start:
                 # Change the color again if the easy button is clicked.
                 # Return true to start the game loop.
                 self.EASY_COLOR = (0, 145, 73)
-                return [True, 'easy'] #returns a list of a boolean and difficulty to be used in main method
+                return [True, 'easy']  # returns a list of a boolean and difficulty to be used in main method
 
 
         else:
@@ -129,7 +129,7 @@ class Start:
             # Change the color again if the medium button is clicked.
             if mouse_click[0]:
                 self.MEDIUM_COLOR = (0, 145, 73)
-                return [True, 'medium'] #returns a list of a boolean and difficulty to be used in main method
+                return [True, 'medium']  # returns a list of a boolean and difficulty to be used in main method
 
         else:
             self.MEDIUM_COLOR = (153, 255, 204)
@@ -143,7 +143,7 @@ class Start:
                 # Change the color again if the hard button is clicked.
                 # Return true to start the game loop.
                 self.HARD_COLOR = (0, 145, 73)
-                return [True, 'hard'] #returns a list of a boolean and difficulty to be used in main method
+                return [True, 'hard']  # returns a list of a boolean and difficulty to be used in main method
 
         else:
             self.HARD_COLOR = (153, 255, 204)
@@ -155,6 +155,7 @@ class Start:
         font = pygame.font.Font(self.FONT, self.AUTHORS_FONT_SIZE)
         authors = font.render(message, True, self.FONT_COLOR)
         self.START_SCREEN.blit(authors, self.AUTHORS_POS)
+
 
 class Won:
     def __init__(self):
@@ -303,8 +304,9 @@ class Lose:
 
         else:
             self.RESTART_COLOR = (153, 255, 204)
-# method outside the main and other classes. this will make the generation of the sudoku board
-# more readable in the main method
+    # method outside the main and other classes. this will make the generation of the sudoku board
+    # more readable in the main method
+
 
 
 def generate_sudoku(size, removed):
@@ -313,9 +315,7 @@ def generate_sudoku(size, removed):
     solution_board = sudoku.get_board()
     sudoku.remove_cells()
     starting_board = sudoku.get_board()
-    # Solution board is the final board. Starting board is the board the user starts with.
-    return [solution_board, starting_board]
-
+    return [solution_board, starting_board]  #solution board is the final board. starting board is the board the user starts with
 
 def game_main(difficulty):
     # add comparison process
@@ -330,14 +330,22 @@ def game_main(difficulty):
         empty_cells = 50
 
     boards = generate_sudoku(9, empty_cells)
+    for row in boards[0]:
+        print(' '.join(map(str, row)))
+
+    boards[0] = [[int(x) for x in row] for row in boards[0]]
+    boards[1] = [[int(x) for x in row] for row in boards[1]]
 
     while True:
         clock = pygame.time.Clock()
 
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
-                # print(boards[1])
                 sys.exit()
+
+        #board.draw() will return true when the board is completely filled up
+        if board.draw(boards[1]):
+            break
 
         keys_pressed = pygame.key.get_pressed()
 
@@ -415,6 +423,13 @@ def game_main(difficulty):
         pygame.display.update()
         board.SCREEN.fill(board.COLOR)
         clock.tick(12)
+    for i in range(9):
+        for j in range(9):
+            if boards[1][i][j] >= 10:
+                boards[1][i][j] = int(boards[1][i][j] / 10)
+    if boards[0] == boards[1]:
+        return True
+    return False
 
 
 def start_main():
@@ -430,7 +445,7 @@ def start_main():
                 sys.exit()
 
         start.title()
-        # This try-except will set the difficulty of the game to selected diffculty
+        # This try-except will set the difficulty of the game to selected difficulty
         try:
             response = start.buttons()
             if response[0]:
@@ -445,14 +460,12 @@ def start_main():
         pygame.display.update()
         clock.tick(60)
 
-
 def reset_game():
     """Resets the game."""
     return game_main(start_main())
 
-
 def win_main():
-    """"""
+    """This code is unreachable unitl we've implemented the RNG."""
 
     win = Won()
 
@@ -469,9 +482,8 @@ def win_main():
         pygame.display.update()
         clock.tick(60)
 
-
 def lose_main():
-    """"""
+    """This code is unreachable until we've implemented the RNG."""
 
     lose = Lose()
 
@@ -490,6 +502,10 @@ def lose_main():
         pygame.display.update()
         clock.tick(60)
 
-
 if __name__ == '__main__':
-    reset_game()
+    if reset_game():
+        win_main()
+    else:
+        lose_main()
+
+
