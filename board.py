@@ -318,7 +318,7 @@ class Board:
         mouse_col = (mouse_y // 73) + 1
 
         # Does not allow the select box to go into the menu section.
-        if mouse_row in range(10) and mouse_col in range(10) and mouse_click[0]:
+        if mouse_row in range(1, 10) and mouse_col in range(1, 10) and mouse_click[0]:
             self.SELECT_X = (mouse_row * 73) - 73
             self.SELECT_Y = (mouse_col * 73) - 73
             self.MOVE_SFX.play()
