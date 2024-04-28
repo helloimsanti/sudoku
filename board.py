@@ -1,12 +1,13 @@
-
-import pygame, sys
 from sudoku import start_main
+
+import pygame
+import sys
 
 
 class Board:
     pygame.init()
 
-    def __init__(self, difficulty='easy'):
+    def __init__(self, difficulty):
         # Screen settings
         self.COLOR = (216, 255, 236)
         self.WIDTH = 660
@@ -70,6 +71,7 @@ class Board:
         lines to delineate the 3x3 boxex. It also draws
         every cell on the board."""
 
+        # The board
         board = [[int(x) for x in row] for row in board]
 
         # Draws smaller vertical lines.
@@ -134,13 +136,16 @@ class Board:
         pygame.draw.line(self.SCREEN, self.LINE_COLOR, (0, 0), (0, self.WIDTH), width=self.LINE_WIDTH)
         pygame.draw.line(self.SCREEN, self.LINE_COLOR, (self.WIDTH, 0), (self.WIDTH, self.HEIGHT), width=self.LINE_WIDTH)
 
+        # Font class for the numbers.
         number_font = pygame.font.Font(self.NUMBER_FONT, self.NUMBER_FONT_SIZE)
 
         h_spacing = 0
         v_spacing = 0
 
+        # Add the numbers to the Sudoku board.
         for array in board:
             for num in range(len(array)):
+                # Add user-inputted numbers.
                 if array[num] > 9:
                     number = number_font.render(str(int(array[num] / 10)), True, (0, 102, 0))
                     self.SCREEN.blit(number, (self.NUMBER_X + h_spacing, self.NUMBER_Y + v_spacing))
@@ -151,6 +156,7 @@ class Board:
                         h_spacing = 0
                         v_spacing += 73
 
+                # Remove zeros
                 elif array[num] != 0:
                     number = number_font.render(str(array[num]), True, (0, 0, 0))
                     self.SCREEN.blit(number, (self.NUMBER_X + h_spacing, self.NUMBER_Y + v_spacing))
@@ -161,6 +167,7 @@ class Board:
                         h_spacing = 0
                         v_spacing += 73
 
+                # Add randomly generated numbers.
                 else:
                     number = number_font.render('', True, (0, 0, 0))
                     self.SCREEN.blit(number, (self.NUMBER_X + h_spacing, self.NUMBER_Y + v_spacing))
@@ -170,11 +177,15 @@ class Board:
                     if num == 8:
                         h_spacing = 0
                         v_spacing += 73
+
+        # Check if the board is full.
         count = 0
+
         for row in board:
             for value in row:
                 if value > 0:
                     count += 1
+
         if count == 81:
             return True
 
@@ -213,16 +224,17 @@ class Board:
         mouse_x, mouse_y = pygame.mouse.get_pos()
         # Get click state
         mouse_click = pygame.mouse.get_pressed()
-        # print(mouse_click)
 
         # Change the color of the restart button if the cursor hovers over it.
         if mouse_x in range(self.BUTTON_X, self.BUTTON_X + self.BUTTON_WIDTH) and mouse_y in range(self.BUTTON_Y, self.BUTTON_Y + self.BUTTON_HEIGHT):
             self.RESTART_COLOR = (0, 204, 102)
 
+            # Return to the starting screen.
             # Change the color again if the restart button is clicked.
             if mouse_click[0]:
                 self.RESTART_COLOR = (0, 145, 73)
                 start_main()
+                return [True, 'restart']
 
         else:
             self.RESTART_COLOR = (51, 255, 153)
@@ -232,12 +244,15 @@ class Board:
                 and mouse_y in range(self.BUTTON_Y, self.BUTTON_Y + self.BUTTON_HEIGHT)):
             self.RESET_COLOR = (0, 204, 102)
 
+            # Resets the board by removing all user-inputted numbers.
             # Change the color again if the reset button is clicked.
             if mouse_click[0]:
                 self.MOVE_SFX_VOL = 0
                 self.RESET_SFX.set_volume(self.RESET_SFX_VOL)
                 self.RESET_SFX.play()
                 self.RESET_COLOR = (0, 145, 73)
+
+                return [True, 'reset']
 
         else:
             self.RESET_COLOR = (51, 255, 153)
@@ -257,11 +272,10 @@ class Board:
 
         self.MOVE_SFX_VOL = 0.4
 
+        return [False]
+
     def select(self):
-        """Marks the cell at (row, col) in the board
-        as the current selected cell. Once a cell has
-        been selected, the user can edit its value or
-        sketched value."""
+        """Sets up the movement keybinds."""
 
         # Draws the select box.
         select_info = (self.SELECT_X, self.SELECT_Y, self.SELECT_WIDTH, self.SELECT_HEIGHT)
@@ -291,10 +305,8 @@ class Board:
             self.MOVE_SFX.play()
 
     def click(self):
-        """If a tuple of (x, y) coordinates is within
-        the displayed board, this function returns a
-        tuple of the (row, col) of the cell which was
-        clicked. Otherwise, this function returns None."""
+        """Sets up the rules of what the user can do with
+        their mouse."""
 
         # Get the location of the mouse on the board.
         mouse_x, mouse_y = pygame.mouse.get_pos()
@@ -308,8 +320,6 @@ class Board:
 
         # Does not allow the select box to go into the menu section.
         if mouse_row in range(10) and mouse_col in range(10) and mouse_click[0]:
-            # print('row, col:', mouse_box)
-            # print('x, y:', [mouse_x, mouse_y], '\n')
             self.SELECT_X = (mouse_row * 73) - 73
             self.SELECT_Y = (mouse_col * 73) - 73
             self.MOVE_SFX.play()
