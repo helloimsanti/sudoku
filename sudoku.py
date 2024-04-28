@@ -1,327 +1,545 @@
-from sudoku import start_main
-
 import pygame
 import sys
 
+from sudoku_generator import *
+from board import *
 
-class Board:
-    pygame.init()
+pygame.init()
 
-    def __init__(self, difficulty):
+
+class Start:
+    def __init__(self):
         # Screen settings
-        self.COLOR = (216, 255, 236)
-        self.WIDTH = 660
-        self.HEIGHT = 780
-        self.SCREEN = pygame.display.set_mode((self.WIDTH, self.HEIGHT))
+        self.COLOR = (0, 255, 128)
+        self.START_WIDTH = 660
+        self.START_HEIGHT = 780
+        self.START_SCREEN = pygame.display.set_mode((self.START_WIDTH, self.START_HEIGHT))
         self.ICON = pygame.image.load('images/sudoku-icon.png')
-        pygame.display.set_caption('Sudoku')
+        pygame.display.set_caption('Sudoku | START')
         pygame.display.set_icon(self.ICON)
 
         # Sound settings
-        self.MOVE_SFX = pygame.mixer.Sound('sfx/movement-blip.mp3')
-        self.MOVE_SFX_VOL = 0.4
-        self.RESET_SFX = pygame.mixer.Sound('sfx/reset-sfx.mp3')
-        self.RESET_SFX_VOL = 0.1
+        self.MUSIC_VOL = 0.2
+        pygame.mixer.music.load('music/start-bg-music.mp3')
+        pygame.mixer.music.play(3)
+        pygame.mixer.music.set_volume(self.MUSIC_VOL)
 
-        # Grid settings
-        self.SQUARE_SIZE = 220
-        self.SUBSQUARE_SIZE = 73
-        self.ROWS = 3
-        self.COLS = 3
-        self.LINE_COLOR = (0, 0, 0)
-        self.SUBLINE_COLOR = (64, 64, 64)
-        self.LINE_WIDTH = 6
-        self.SUBlINE_WIDTH = 2
+        # General letter font settings
+        self.FONT = 'fonts/MotleyForcesRegular.ttf'
+        self.FONT_COLOR = (255, 255, 255)
+        self.BUTTON_FONT_SIZE = 60
 
-        # Menu settings
-        self.RESTART_COLOR = (51, 255, 153)
-        self.RESTART_BORDER_COLOR = (0, 102, 51)
-        self.RESET_COLOR = (51, 255, 153)
-        self.RESET_BORDER_COLOR = (0, 102, 51)
-        self.EXIT_COLOR = (51, 255, 153)
-        self.EXIT_BORDER_COLOR = (0, 102, 51)
-        self.BUTTON_BORDER_WIDTH = 5
-        self.BUTTON_X = 40
-        self.BUTTON_Y = 690
-        self.BUTTON_WIDTH = 140
-        self.BUTTON_HEIGHT = 70
-        self.MENU_FONT = 'fonts/MotleyForcesRegular.ttf'
-        self.MENU_FONT_SIZE = 34
-        self.MENU_FONT_COLOR = (255, 255, 255)
+        # Main title settings
+        self.TITLE_FONT_SIZE = 120
+        self.TITLE_FONT_COLOR = (255, 255, 255)
+        self.TITLE_POS = (120, 80)
 
-        # Select box settings
-        self.SELECT_COLOR = (255, 0, 0)
-        self.SELECT_X = 0
-        self.SELECT_Y = 0
-        self.SELECT_WIDTH = 75
-        self.SELECT_HEIGHT = 75
-        self.SELECT_BORDER_WIDTH = 4
+        # Choose difficulty message settings.
+        self.DIF_FONT = 30
+        self.DIF_COLOR = (255, 255, 255)
+        self.DIF_POS = (200, 240)
 
-        # Number settings
-        self.NUMBER_FONT = 'fonts/MotleyForcesRegular.ttf'
-        self.NUMBER_FONT_SIZE = 40
-        self.NUMBER_X = 27
-        self.NUMBER_Y = 25
+        # Easy button settings
+        self.EASY_COLOR = (153, 255, 204)
+        self.EASY_WIDTH = 200
+        self.EASY_HEIGHT = 100
+        self.EASY_X = 100
+        self.EASY_Y = 290
 
-        # Game difficulty
-        self.difficulty = difficulty
+        # Medium button settings
+        self.MEDIUM_COLOR = (153, 255, 204)
+        self.MEDIUM_WIDTH = 200
+        self.MEDIUM_HEIGHT = 100
+        self.MEDIUM_X = 350
+        self.MEDIUM_Y = 290
 
-    def draw(self, board):
-        """Draws an outline of the Sudoku grid, with bold
-        lines to delineate the 3x3 boxex. It also draws
-        every cell on the board."""
+        # Hard button settings
+        self.HARD_COLOR = (153, 255, 204)
+        self.HARD_WIDTH = 200
+        self.HARD_HEIGHT = 100
+        self.HARD_X = (self.START_WIDTH / 2) - (self.HARD_WIDTH / 2)
+        self.HARD_Y = 420
 
-        # The board
-        board = [[int(x) for x in row] for row in board]
+        # Author settings
+        self.AUTHORS_FONT_SIZE = 20
+        self.AUTHORS_POS = (120, 700)
 
-        # Draws smaller vertical lines.
-        i = 1
+    def title(self):
+        """Draws the main title of the game."""
 
-        for sub_row in range(1, self.ROWS * 3):
-            pygame.draw.line(self.SCREEN,
-                             self.SUBLINE_COLOR,
-                             (0, self.SUBSQUARE_SIZE * i),
-                             (self.WIDTH, self.SUBSQUARE_SIZE * i),
-                             width=self.SUBlINE_WIDTH)
+        self.START_SCREEN.fill(self.COLOR)
 
-            i += 1
+        font = pygame.font.Font(self.FONT, self.TITLE_FONT_SIZE)
+        title = font.render('Sudoku', True, self.TITLE_FONT_COLOR)
+        self.START_SCREEN.blit(title, self.TITLE_POS)
 
-            if i == 3 or i == 6:
-                self.SUBlINE_WIDTH = 0
-            else:
-                self.SUBlINE_WIDTH = 2
+    def buttons(self):
+        """Draws the start button."""
 
-        # Draws smaller horizontal lines.
-        i = 1
+        choose_dif_font = pygame.font.Font(self.FONT, 30)
+        choose_dif = choose_dif_font.render('Choose difficulty:', True, self.FONT_COLOR)
+        self.START_SCREEN.blit(choose_dif, self.DIF_POS)
 
-        for sub_col in range(1, self.COLS * 3):
-            pygame.draw.line(self.SCREEN,
-                             self.SUBLINE_COLOR,
-                             (self.SUBSQUARE_SIZE * i, 0),
-                             (self.SUBSQUARE_SIZE * i, self.HEIGHT - 120),
-                             width=self.SUBlINE_WIDTH)
+        # Sets a font instance for every button.
+        font = pygame.font.Font(self.FONT, self.BUTTON_FONT_SIZE)
+        easy_button = font.render('Easy', True, self.FONT_COLOR)
+        medium_button = font.render('Medium', True, self.FONT_COLOR)
+        hard_button = font.render('Hard', True, self.FONT_COLOR)
 
-            i += 1
+        # Draws the easy button.
+        easy_button_info = (self.EASY_X, self.EASY_Y, self.EASY_WIDTH, self.EASY_HEIGHT)
+        pygame.draw.rect(self.START_SCREEN, self.EASY_COLOR, easy_button_info)
 
-            if i == 3 or i == 6:
-                self.SUBlINE_WIDTH = 0
-            else:
-                self.SUBlINE_WIDTH = 2
+        # Draws the medium button.
+        medium_button_info = (self.MEDIUM_X - 20, self.MEDIUM_Y, self.MEDIUM_WIDTH + 40, self.MEDIUM_HEIGHT)
+        pygame.draw.rect(self.START_SCREEN, self.MEDIUM_COLOR, medium_button_info)
 
-        # Draws vertical lines.
-        i = 1
+        # Draws the hard button.
+        hard_button_info = (self.HARD_X, self.HARD_Y, self.HARD_WIDTH, self.HARD_HEIGHT)
+        pygame.draw.rect(self.START_SCREEN, self.HARD_COLOR, hard_button_info)
 
-        for row in range(1, self.ROWS + 1):
-            pygame.draw.line(self.SCREEN,
-                             self.LINE_COLOR,
-                             (0, self.SQUARE_SIZE * i),
-                             (self.WIDTH, self.SQUARE_SIZE * i),
-                             width=self.LINE_WIDTH)
+        # Blits "easy", "medium", and "hard" to the screen.
+        self.START_SCREEN.blit(easy_button, (self.EASY_X + 34, self.EASY_Y + 25))
+        self.START_SCREEN.blit(medium_button, (self.MEDIUM_X - 2, self.MEDIUM_Y + 25))
+        self.START_SCREEN.blit(hard_button, (self.HARD_X + 35, self.HARD_Y + 25))
 
-            i += 1
-
-        # Draws horizontal lines.
-        i = 1
-
-        for col in range(1, self.COLS):
-            pygame.draw.line(self.SCREEN,
-                             self.LINE_COLOR,
-                             (self.SQUARE_SIZE * i, 0),
-                             (self.SQUARE_SIZE * i, self.HEIGHT - 120),
-                             width=self.LINE_WIDTH)
-
-            i += 1
-
-        # Draws the bordering vertical lines.
-        pygame.draw.line(self.SCREEN, self.LINE_COLOR, (0, 0), (0, self.WIDTH), width=self.LINE_WIDTH)
-        pygame.draw.line(self.SCREEN, self.LINE_COLOR, (self.WIDTH, 0), (self.WIDTH, self.HEIGHT), width=self.LINE_WIDTH)
-
-        # Font class for the numbers.
-        number_font = pygame.font.Font(self.NUMBER_FONT, self.NUMBER_FONT_SIZE)
-
-        h_spacing = 0
-        v_spacing = 0
-
-        # Add the numbers to the Sudoku board.
-        for array in board:
-            for num in range(len(array)):
-                # Add user-inputted numbers.
-                if array[num] > 9:
-                    number = number_font.render(str(int(array[num] / 10)), True, (0, 102, 0))
-                    self.SCREEN.blit(number, (self.NUMBER_X + h_spacing, self.NUMBER_Y + v_spacing))
-
-                    h_spacing += 73
-
-                    if num == 8:
-                        h_spacing = 0
-                        v_spacing += 73
-
-                # Remove zeros
-                elif array[num] != 0:
-                    number = number_font.render(str(array[num]), True, (0, 0, 0))
-                    self.SCREEN.blit(number, (self.NUMBER_X + h_spacing, self.NUMBER_Y + v_spacing))
-
-                    h_spacing += 73
-
-                    if num == 8:
-                        h_spacing = 0
-                        v_spacing += 73
-
-                # Add randomly generated numbers.
-                else:
-                    number = number_font.render('', True, (0, 0, 0))
-                    self.SCREEN.blit(number, (self.NUMBER_X + h_spacing, self.NUMBER_Y + v_spacing))
-
-                    h_spacing += 73
-
-                    if num == 8:
-                        h_spacing = 0
-                        v_spacing += 73
-
-        # Check if the board is full.
-        count = 0
-
-        for row in board:
-            for value in row:
-                if value > 0:
-                    count += 1
-
-        if count == 81:
-            return True
-
-    def menu(self):
-        """Draws the menu at the bottom of the screen."""
-
-        # Sets a font instance for every menu button.
-        font = pygame.font.Font(self.MENU_FONT, self.MENU_FONT_SIZE)
-        restart_button = font.render('Restart', True, self.MENU_FONT_COLOR)
-        reset_button = font.render('Reset', True, self.MENU_FONT_COLOR)
-        exit_button = font.render('Exit', True, self.MENU_FONT_COLOR)
-
-        margin = 179
-
-        # Draws the restart button.
-        restart_button_info = (self.BUTTON_X, self.BUTTON_Y, self.BUTTON_WIDTH, self.BUTTON_HEIGHT)
-        pygame.draw.rect(self.SCREEN, self.RESTART_COLOR, restart_button_info)
-        pygame.draw.rect(self.SCREEN, self.RESTART_BORDER_COLOR, restart_button_info, width=self.BUTTON_BORDER_WIDTH)
-
-        # Draws the reset button.
-        reset_button_info = ((self.BUTTON_X * 2) + margin, self.BUTTON_Y, self.BUTTON_WIDTH, self.BUTTON_HEIGHT)
-        pygame.draw.rect(self.SCREEN, self.RESET_COLOR, reset_button_info)
-        pygame.draw.rect(self.SCREEN, self.RESET_BORDER_COLOR, reset_button_info, width=self.BUTTON_BORDER_WIDTH)
-
-        # Draws the exit button.
-        exit_button_info = ((self.BUTTON_X * 3) + (margin * 2), self.BUTTON_Y, self.BUTTON_WIDTH, self.BUTTON_HEIGHT)
-        pygame.draw.rect(self.SCREEN, self.EXIT_COLOR, exit_button_info)
-        pygame.draw.rect(self.SCREEN, self.EXIT_BORDER_COLOR, exit_button_info, width=self.BUTTON_BORDER_WIDTH)
-
-        # Blit all "restart", "reset", and "exit" to the screen.
-        self.SCREEN.blit(restart_button, (self.BUTTON_X + 12, self.BUTTON_Y + 20))
-        self.SCREEN.blit(reset_button, ((self.BUTTON_X * 7) + 6, self.BUTTON_Y + 20))
-        self.SCREEN.blit(exit_button, ((self.BUTTON_X * 13), self.BUTTON_Y + 20))
-
-        # Get cursor x and y coordinates.
+        # Get the location of the mouse on the screen.
         mouse_x, mouse_y = pygame.mouse.get_pos()
-        # Get click state
         mouse_click = pygame.mouse.get_pressed()
 
-        # Change the color of the restart button if the cursor hovers over it.
-        if mouse_x in range(self.BUTTON_X, self.BUTTON_X + self.BUTTON_WIDTH) and mouse_y in range(self.BUTTON_Y, self.BUTTON_Y + self.BUTTON_HEIGHT):
-            self.RESTART_COLOR = (0, 204, 102)
+        # Change the color of the easy button if the cursor hovers over it.
+        if (mouse_x in range(int(self.EASY_X), int(self.EASY_X + self.EASY_WIDTH))
+                and mouse_y in range(self.EASY_Y, self.EASY_Y + self.EASY_HEIGHT)):
+            self.EASY_COLOR = (0, 204, 102)
 
-            # Return to the starting screen.
-            # Change the color again if the restart button is clicked.
             if mouse_click[0]:
-                self.RESTART_COLOR = (0, 145, 73)
-                start_main()
-                return [True, 'restart']
+                # Change the color again if the easy button is clicked.
+                # Return true to start the game loop.
+                self.EASY_COLOR = (0, 145, 73)
+                return [True, 'easy']  # returns a list of a boolean and difficulty to be used in main method
 
         else:
-            self.RESTART_COLOR = (51, 255, 153)
+            self.EASY_COLOR = (153, 255, 204)
 
-        # Change the color of the reset button if the cursor hovers over it.
-        if (mouse_x in range((self.BUTTON_X * 2) + margin, ((self.BUTTON_X * 2) + margin) + self.BUTTON_WIDTH)
-                and mouse_y in range(self.BUTTON_Y, self.BUTTON_Y + self.BUTTON_HEIGHT)):
-            self.RESET_COLOR = (0, 204, 102)
+        # Change the color of the medium button if the cursor hovers over it.
+        if (mouse_x in range(int(self.MEDIUM_X), int(self.MEDIUM_X + self.MEDIUM_WIDTH))
+                and mouse_y in range(self.MEDIUM_Y, self.MEDIUM_Y + self.MEDIUM_HEIGHT)):
+            self.MEDIUM_COLOR = (0, 204, 102)
 
-            # Resets the board by removing all user-inputted numbers.
-            # Change the color again if the reset button is clicked.
+            # Change the color again if the medium button is clicked.
             if mouse_click[0]:
-                self.MOVE_SFX_VOL = 0
-                self.RESET_SFX.set_volume(self.RESET_SFX_VOL)
-                self.RESET_SFX.play()
-                self.RESET_COLOR = (0, 145, 73)
-
-                return [True, 'reset']
+                self.MEDIUM_COLOR = (0, 145, 73)
+                return [True, 'medium']  # returns a list of a boolean and difficulty to be used in main method
 
         else:
-            self.RESET_COLOR = (51, 255, 153)
+            self.MEDIUM_COLOR = (153, 255, 204)
+
+        # Change the color of the hard button if the cursor hovers over it.
+        if (mouse_x in range(int(self.HARD_X), int(self.HARD_X + self.HARD_WIDTH))
+                and mouse_y in range(self.HARD_Y, self.HARD_Y + self.HARD_HEIGHT)):
+            self.HARD_COLOR = (0, 204, 102)
+
+            if mouse_click[0]:
+                # Change the color again if the hard button is clicked.
+                # Return true to start the game loop.
+                self.HARD_COLOR = (0, 145, 73)
+                return [True, 'hard']  # returns a list of a boolean and difficulty to be used in main method
+
+        else:
+            self.HARD_COLOR = (153, 255, 204)
+
+    def authors(self):
+        """Draws the names of the game's authors."""
+
+        message = 'By Santiago A., John B., Giles G., and Joshua R.'
+        font = pygame.font.Font(self.FONT, self.AUTHORS_FONT_SIZE)
+        authors = font.render(message, True, self.FONT_COLOR)
+        self.START_SCREEN.blit(authors, self.AUTHORS_POS)
+
+
+class Won:
+    def __init__(self):
+        # Screen settings
+        self.COLOR = (0, 255, 128)
+        self.WIN_WIDTH = 660
+        self.WIN_HEIGHT = 780
+        self.WIN_SCREEN = pygame.display.set_mode((self.WIN_WIDTH, self.WIN_HEIGHT))
+        self.ICON = pygame.image.load('images/sudoku-icon.png')
+        pygame.display.set_caption('Sudoku | You won!')
+        pygame.display.set_icon(self.ICON)
+
+        # Sound settings
+        self.MUSIC_VOL = 0.2
+        pygame.mixer.music.load('music/win-bg-music.mp3')
+        pygame.mixer.music.play(3)
+        pygame.mixer.music.set_volume(self.MUSIC_VOL)
+
+        # General letter font settings
+        self.FONT = 'fonts/MotleyForcesRegular.ttf'
+        self.FONT_COLOR = (255, 255, 255)
+
+        # Winning message settings
+        self.WIN_FONT_SIZE = 60
+        self.WIN_POS = (135, 80)
+
+        # Exit button settings
+        self.EXIT_COLOR = (153, 255, 204)
+        self.EXIT_WIDTH = 180
+        self.EXIT_HEIGHT = 90
+        self.EXIT_X = (self.WIN_WIDTH / 2) - (self.EXIT_WIDTH / 2)
+        self.EXIT_Y = 260
+        self.EXIT_FONT_SIZE = 60
+
+    def win_message(self):
+        """Draws the winning message."""
+
+        self.WIN_SCREEN.fill(self.COLOR)
+
+        # Add the winning message.
+        font = pygame.font.Font(self.FONT, self.WIN_FONT_SIZE)
+        win_message = font.render('Hey! You won!', True, self.FONT_COLOR)
+        self.WIN_SCREEN.blit(win_message, self.WIN_POS)
+
+    def exit_button(self):
+        """Draws the exit button."""
+
+        # Sets a font instance for the exit button.
+        font = pygame.font.Font(self.FONT, self.EXIT_FONT_SIZE)
+        exit_button = font.render('Exit', True, self.FONT_COLOR)
+
+        # Draws the exit button.
+        exit_button_info = (self.EXIT_X, self.EXIT_Y, self.EXIT_WIDTH, self.EXIT_HEIGHT)
+        pygame.draw.rect(self.WIN_SCREEN, self.EXIT_COLOR, exit_button_info)
+
+        # Blits "exit" to the screen.
+        self.WIN_SCREEN.blit(exit_button, (self.EXIT_X + 36, self.EXIT_Y + 23))
+
+        # Get the location of the mouse on the screen.
+        mouse_x, mouse_y = pygame.mouse.get_pos()
+        mouse_click = pygame.mouse.get_pressed()
 
         # Change the color of the exit button if the cursor hovers over it.
-        if (mouse_x in range((self.BUTTON_X * 3) + (margin * 2), ((self.BUTTON_X * 3) + (margin * 2)) + self.BUTTON_WIDTH)
-                and mouse_y in range(self.BUTTON_Y, self.BUTTON_Y + self.BUTTON_HEIGHT)):
+        if (mouse_x in range(int(self.EXIT_X), int(self.EXIT_X + self.EXIT_WIDTH))
+                and mouse_y in range(self.EXIT_Y, self.EXIT_Y + self.EXIT_HEIGHT)):
             self.EXIT_COLOR = (0, 204, 102)
 
-            # Change the color again if the exit button is clicked.
             if mouse_click[0]:
+                # Change the color again if the exit button is clicked.
+                # Return true to start the game loop.
                 self.EXIT_COLOR = (0, 145, 73)
                 sys.exit()
 
         else:
-            self.EXIT_COLOR = (51, 255, 153)
+            self.EXIT_COLOR = (153, 255, 204)
 
-        self.MOVE_SFX_VOL = 0.4
 
-        return [False]
+class Lose:
+    def __init__(self):
+        # Screen settings
+        self.COLOR = (0, 255, 128)
+        self.LOSE_WIDTH = 660
+        self.LOSE_HEIGHT = 780
+        self.LOSE_SCREEN = pygame.display.set_mode((self.LOSE_WIDTH, self.LOSE_HEIGHT))
+        self.ICON = pygame.image.load('images/sudoku-icon.png')
+        pygame.display.set_caption('Sudoku | You lost')
+        pygame.display.set_icon(self.ICON)
 
-    def select(self):
-        """Sets up the movement keybinds."""
+        # Sound settings
+        self.MUSIC_VOL = 0.2
+        pygame.mixer.music.load('sfx/lose-sfx.mp3')
+        pygame.mixer.music.set_volume(self.MUSIC_VOL)
+        pygame.mixer.music.play()
 
-        # Draws the select box.
-        select_info = (self.SELECT_X, self.SELECT_Y, self.SELECT_WIDTH, self.SELECT_HEIGHT)
-        pygame.draw.rect(self.SCREEN, self.SELECT_COLOR, select_info, width=self.SELECT_BORDER_WIDTH)
+        # General letter font settings
+        self.FONT = 'fonts/MotleyForcesRegular.ttf'
+        self.FONT_COLOR = (255, 255, 255)
 
-        key_pressed = pygame.key.get_pressed()
-        self.MOVE_SFX.set_volume(self.MOVE_SFX_VOL)
+        # Winning message settings
+        self.LOSE_FONT_SIZE = 60
+        self.LOSE_POS = (205, 80)
 
-        # Move the select box up if the up-arrow key is pressed.
-        if key_pressed[pygame.K_UP] and self.SELECT_Y > 0:
-            self.SELECT_Y -= 73
-            self.MOVE_SFX.play()
+        # Exit button settings
+        self.RESTART_COLOR = (153, 255, 204)
+        self.RESTART_WIDTH = 240
+        self.RESTART_HEIGHT = 120
+        self.RESTART_X = (self.LOSE_WIDTH / 2) - (self.RESTART_WIDTH / 2)
+        self.RESTART_Y = 590
+        self.RESTART_FONT_SIZE = 60
 
-        # Move the select box down if the down-arrow key is pressed.
-        if key_pressed[pygame.K_DOWN] and self.SELECT_Y < self.HEIGHT - self.SELECT_HEIGHT - 150:
-            self.SELECT_Y += 73
-            self.MOVE_SFX.play()
+    def lose_message(self):
+        """Draws the losing message."""
 
-        # Move the select box left if the left-arrow key is pressed.
-        if key_pressed[pygame.K_LEFT] and self.SELECT_X > 0:
-            self.SELECT_X -= 73
-            self.MOVE_SFX.play()
+        self.LOSE_SCREEN.fill(self.COLOR)
 
-        # Move the select box right if the right-arrow key is pressed.
-        if key_pressed[pygame.K_RIGHT] and self.SELECT_X < self.WIDTH - 100:
-            self.SELECT_X += 73
-            self.MOVE_SFX.play()
+        # Add the losing message.
+        font = pygame.font.Font(self.FONT, self.LOSE_FONT_SIZE)
+        win_message = font.render('You lost.', True, self.FONT_COLOR)
+        self.LOSE_SCREEN.blit(win_message, self.LOSE_POS)
 
-    def click(self):
-        """Sets up the rules of what the user can do with
-        their mouse."""
+    def restart_button(self):
 
-        # Get the location of the mouse on the board.
+        # Sets a font instance for the exit button.
+        font = pygame.font.Font(self.FONT, self.RESTART_FONT_SIZE)
+        restart_button = font.render('Restart', True, self.FONT_COLOR)
+
+        # Draws the restart button.
+        restart_button_info = (self.RESTART_X, self.RESTART_Y, self.RESTART_WIDTH, self.RESTART_HEIGHT)
+        pygame.draw.rect(self.LOSE_SCREEN, self.RESTART_COLOR, restart_button_info)
+
+        # Blit restart to the screen.
+        self.LOSE_SCREEN.blit(restart_button, (self.RESTART_X + 12, self.RESTART_Y + 35))
+
+        # Get the location of the mouse on the screen.
         mouse_x, mouse_y = pygame.mouse.get_pos()
         mouse_click = pygame.mouse.get_pressed()
-        self.MOVE_SFX.set_volume(self.MOVE_SFX_VOL)
 
-        # The position of the mouse in rows and columns.
-        mouse_row = (mouse_x // 73) + 1
-        mouse_col = (mouse_y // 73) + 1
-        # mouse_box = [mouse_row, mouse_col]
+        # Change the color of the restart button if the cursor hovers over it.
+        if (mouse_x in range(int(self.RESTART_X), int(self.RESTART_X + self.RESTART_WIDTH))
+                and mouse_y in range(self.RESTART_Y, self.RESTART_Y + self.RESTART_HEIGHT)):
+            self.RESTART_COLOR = (0, 204, 102)
 
-        # Does not allow the select box to go into the menu section.
-        if mouse_row in range(10) and mouse_col in range(10) and mouse_click[0]:
-            # print('row, col:', mouse_box)
-            # print('x, y:', [mouse_x, mouse_y], '\n')
-            self.SELECT_X = (mouse_row * 73) - 73
-            self.SELECT_Y = (mouse_col * 73) - 73
-            self.MOVE_SFX.play()
+            if mouse_click[0]:
+                # Change the color again if the restart button is clicked.
+                # Return true to start the game loop.
+                self.RESTART_COLOR = (0, 145, 73)
+                return True
+
+        else:
+            self.RESTART_COLOR = (153, 255, 204)
+
+
+def generate_sudoku(size, removed):
+    """Generates the Sudoku board."""
+
+    sudoku = SudokuGenerator(size, removed)
+    sudoku.fill_values()
+    solution_board = sudoku.get_board()
+    sudoku.remove_cells()
+    starting_board = sudoku.get_board()
+    return [solution_board, starting_board]
+
+
+def game_main(difficulty):
+    """Game main loop"""
+
+    # Passes the difficulty to the board.
+    board = Board(difficulty)
+
+    if difficulty == 'easy':
+        empty_cells = 30
+    elif difficulty == 'medium':
+        empty_cells = 40
+    else:
+        empty_cells = 50
+
+    # The board
+    boards = generate_sudoku(9, empty_cells)
+
+    # Answer and user board.
+    boards[0] = [[int(x) for x in row] for row in boards[0]]
+    boards[1] = [[int(x) for x in row] for row in boards[1]]
+
+    while True:
+        clock = pygame.time.Clock()
+
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                sys.exit()
+
+        # Pass the board to the "draw" method in board.py.
+        # Break from the game loop if the board is full.
+        if board.draw(boards[1]):
+            break
+
+        # Record and add user-inputted numbers to the board.
+        keys_pressed = pygame.key.get_pressed()
+
+        # Record 1
+        if keys_pressed[pygame.K_1]:
+            array = board.SELECT_Y // 73
+            num = board.SELECT_X // 73
+
+            if boards[1][array][num] == 0 or boards[1][array][num] > 9:
+                boards[1][array][num] = 10
+
+        # Record 2
+        if keys_pressed[pygame.K_2]:
+            array = board.SELECT_Y // 73
+            num = board.SELECT_X // 73
+
+            if boards[1][array][num] == 0 or boards[1][array][num] > 9:
+                boards[1][array][num] = 20
+
+        # Record 3
+        if keys_pressed[pygame.K_3]:
+            array = board.SELECT_Y // 73
+            num = board.SELECT_X // 73
+
+            if boards[1][array][num] == 0 or boards[1][array][num] > 9:
+                boards[1][array][num] = 30
+
+        # Record 4
+        if keys_pressed[pygame.K_4]:
+            array = board.SELECT_Y // 73
+            num = board.SELECT_X // 73
+
+            if boards[1][array][num] == 0 or boards[1][array][num] > 9:
+                boards[1][array][num] = 40
+
+        # Record 5
+        if keys_pressed[pygame.K_5]:
+            array = board.SELECT_Y // 73
+            num = board.SELECT_X // 73
+
+            if boards[1][array][num] == 0 or boards[1][array][num] > 9:
+                boards[1][array][num] = 50
+
+        # Record 6
+        if keys_pressed[pygame.K_6]:
+            array = board.SELECT_Y // 73
+            num = board.SELECT_X // 73
+
+            if boards[1][array][num] == 0 or boards[1][array][num] > 9:
+                boards[1][array][num] = 60
+
+        # Record 7
+        if keys_pressed[pygame.K_7]:
+            array = board.SELECT_Y // 73
+            num = board.SELECT_X // 73
+
+            if boards[1][array][num] == 0 or boards[1][array][num] > 9:
+                boards[1][array][num] = 70
+
+        # Record 8
+        if keys_pressed[pygame.K_8]:
+            array = board.SELECT_Y // 73
+            num = board.SELECT_X // 73
+
+            if boards[1][array][num] == 0 or boards[1][array][num] > 9:
+                boards[1][array][num] = 80
+
+        # Record 9
+        if keys_pressed[pygame.K_9]:
+            array = board.SELECT_Y // 73
+            num = board.SELECT_X // 73
+
+            if boards[1][array][num] == 0 or boards[1][array][num] > 9:
+                boards[1][array][num] = 90
+
+        board.draw(boards[1])
+
+        button_clicked = board.menu()
+
+        # Remove all user-inputted numbers when the reset button is clicked.
+        if button_clicked[0]:
+            if button_clicked[1] == 'reset':
+                for array in boards[1]:
+                    for num in range(len(array)):
+                        if array[num] > 9:
+                            array[num] = 0
+
+            # Return to the starting screen when the restart button is clicked.
+            if button_clicked[1] == 'restart':
+                reset_game()
+
+        board.select()
+        board.click()
+
+        pygame.display.update()
+        board.SCREEN.fill(board.COLOR)
+        clock.tick(12)
+
+    # Compares the Sudoku board with the answer board.
+    for i in range(9):
+        for j in range(9):
+            if boards[1][i][j] >= 10:
+                boards[1][i][j] = int(boards[1][i][j] / 10)
+
+    if boards[0] == boards[1]:
+        return True
+
+    return False
+
+
+def start_main():
+    """Start menu main loop"""
+
+    start = Start()
+
+    while True:
+        clock = pygame.time.Clock()
+
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                sys.exit()
+
+        start.title()
+        # This try-except will set the difficulty of the game to selected difficulty
+        try:
+            response = start.buttons()
+            if response[0]:
+                difficulty = response[1]
+                pygame.mixer.music.stop()
+                return difficulty
+
+        except TypeError:
+            pass
+
+        start.authors()
+
+        pygame.display.update()
+        clock.tick(60)
+
+
+def reset_game():
+    """Resets the game."""
+
+    return game_main(start_main())
+
+
+def win_main():
+    """This code is unreachable unitl we've implemented the RNG."""
+
+    win = Won()
+
+    while True:
+        clock = pygame.time.Clock()
+
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                sys.exit()
+
+        win.win_message()
+        win.exit_button()
+
+        pygame.display.update()
+        clock.tick(60)
+
+
+def lose_main():
+    """This code is unreachable until we've implemented the RNG."""
+
+    lose = Lose()
+
+    while True:
+        clock = pygame.time.Clock()
+
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                sys.exit()
+
+        lose.lose_message()
+
+        # Reset the game if the user presses the restart button from the losing screen.
+        if lose.restart_button():
+            reset_game()
+
+        pygame.display.update()
+        clock.tick(60)
+
+
+if __name__ == '__main__':
+    if reset_game():
+        win_main()
+    else:
+        lose_main()
