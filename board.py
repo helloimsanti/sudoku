@@ -55,13 +55,21 @@ class Board:
         self.SELECT_HEIGHT = 75
         self.SELECT_BORDER_WIDTH = 4
 
+        # Number settings
+        self.NUMBER_FONT = 'fonts/MotleyForcesRegular.ttf'
+        self.NUMBER_FONT_SIZE = 40
+        self.NUMBER_X = 27
+        self.NUMBER_Y = 25
+
         # Game difficulty
         self.difficulty = difficulty
 
-    def draw(self):
+    def draw(self, board):
         """Draws an outline of the Sudoku grid, with bold
         lines to delineate the 3x3 boxex. It also draws
         every cell on the board."""
+
+        board = [[int(x) for x in row] for row in board]
 
         # Draws smaller vertical lines.
         i = 1
@@ -124,6 +132,43 @@ class Board:
         # Draws the bordering vertical lines.
         pygame.draw.line(self.SCREEN, self.LINE_COLOR, (0, 0), (0, self.WIDTH), width=self.LINE_WIDTH)
         pygame.draw.line(self.SCREEN, self.LINE_COLOR, (self.WIDTH, 0), (self.WIDTH, self.HEIGHT), width=self.LINE_WIDTH)
+
+        number_font = pygame.font.Font(self.NUMBER_FONT, self.NUMBER_FONT_SIZE)
+
+        h_spacing = 0
+        v_spacing = 0
+
+        for array in board:
+            for num in range(len(array)):
+                if array[num] > 9:
+                    number = number_font.render(str(int(array[num] / 10)), True, (0, 102, 0))
+                    self.SCREEN.blit(number, (self.NUMBER_X + h_spacing, self.NUMBER_Y + v_spacing))
+
+                    h_spacing += 73
+
+                    if num == 8:
+                        h_spacing = 0
+                        v_spacing += 73
+
+                elif array[num] != 0:
+                    number = number_font.render(str(array[num]), True, (0, 0, 0))
+                    self.SCREEN.blit(number, (self.NUMBER_X + h_spacing, self.NUMBER_Y + v_spacing))
+
+                    h_spacing += 73
+
+                    if num == 8:
+                        h_spacing = 0
+                        v_spacing += 73
+
+                else:
+                    number = number_font.render('', True, (0, 0, 0))
+                    self.SCREEN.blit(number, (self.NUMBER_X + h_spacing, self.NUMBER_Y + v_spacing))
+
+                    h_spacing += 73
+
+                    if num == 8:
+                        h_spacing = 0
+                        v_spacing += 73
 
     def menu(self):
         """Draws the menu at the bottom of the screen."""
@@ -257,6 +302,7 @@ class Board:
         if mouse_row in range(10) and mouse_col in range(10) and mouse_click[0]:
             # print('row, col:', mouse_box)
             # print('x, y:', [mouse_x, mouse_y], '\n')
-            self.SELECT_Y = (mouse_col * 73) - 73
             self.SELECT_X = (mouse_row * 73) - 73
+            self.SELECT_Y = (mouse_col * 73) - 73
+            print(self.SELECT_X, self.SELECT_Y)
             self.MOVE_SFX.play()
