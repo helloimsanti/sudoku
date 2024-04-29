@@ -150,33 +150,33 @@ class Board:
                     number = number_font.render(str(int(array[num] / 10)), True, (0, 102, 0))
                     self.SCREEN.blit(number, (self.NUMBER_X + h_spacing, self.NUMBER_Y + v_spacing))
 
-                    h_spacing += 73
+                    h_spacing += self.SUBSQUARE_SIZE
 
                     if num == 8:
                         h_spacing = 0
-                        v_spacing += 73
+                        v_spacing += self.SUBSQUARE_SIZE
 
                 # Remove zeros
                 elif array[num] != 0:
                     number = number_font.render(str(array[num]), True, (0, 0, 0))
                     self.SCREEN.blit(number, (self.NUMBER_X + h_spacing, self.NUMBER_Y + v_spacing))
 
-                    h_spacing += 73
+                    h_spacing += self.SUBSQUARE_SIZE
 
                     if num == 8:
                         h_spacing = 0
-                        v_spacing += 73
+                        v_spacing += self.SUBSQUARE_SIZE
 
                 # Add randomly generated numbers.
                 else:
                     number = number_font.render('', True, (0, 0, 0))
                     self.SCREEN.blit(number, (self.NUMBER_X + h_spacing, self.NUMBER_Y + v_spacing))
 
-                    h_spacing += 73
+                    h_spacing += self.SUBSQUARE_SIZE
 
                     if num == 8:
                         h_spacing = 0
-                        v_spacing += 73
+                        v_spacing += self.SUBSQUARE_SIZE
 
         # Check if the board is full.
         count = 0
@@ -286,22 +286,22 @@ class Board:
 
         # Move the select box up if the up-arrow key is pressed.
         if key_pressed[pygame.K_UP] and self.SELECT_Y > 0:
-            self.SELECT_Y -= 73
+            self.SELECT_Y -= self.SUBSQUARE_SIZE
             self.MOVE_SFX.play()
 
         # Move the select box down if the down-arrow key is pressed.
         if key_pressed[pygame.K_DOWN] and self.SELECT_Y < self.HEIGHT - self.SELECT_HEIGHT - 150:
-            self.SELECT_Y += 73
+            self.SELECT_Y += self.SUBSQUARE_SIZE
             self.MOVE_SFX.play()
 
         # Move the select box left if the left-arrow key is pressed.
         if key_pressed[pygame.K_LEFT] and self.SELECT_X > 0:
-            self.SELECT_X -= 73
+            self.SELECT_X -= self.SUBSQUARE_SIZE
             self.MOVE_SFX.play()
 
         # Move the select box right if the right-arrow key is pressed.
         if key_pressed[pygame.K_RIGHT] and self.SELECT_X < self.WIDTH - 100:
-            self.SELECT_X += 73
+            self.SELECT_X += self.SUBSQUARE_SIZE
             self.MOVE_SFX.play()
 
     def click(self):
@@ -314,11 +314,12 @@ class Board:
         self.MOVE_SFX.set_volume(self.MOVE_SFX_VOL)
 
         # The position of the mouse in rows and columns.
-        mouse_row = (mouse_x // 73) + 1
-        mouse_col = (mouse_y // 73) + 1
+        mouse_row = (mouse_x // self.SUBSQUARE_SIZE) + 1
+        mouse_col = (mouse_y // self.SUBSQUARE_SIZE) + 1
+        # mouse_box = [mouse_row, mouse_col]
 
         # Does not allow the select box to go into the menu section.
         if mouse_row in range(1, 10) and mouse_col in range(1, 10) and mouse_click[0]:
-            self.SELECT_X = (mouse_row * 73) - 73
-            self.SELECT_Y = (mouse_col * 73) - 73
+            self.SELECT_X = (mouse_row * self.SUBSQUARE_SIZE) - self.SUBSQUARE_SIZE
+            self.SELECT_Y = (mouse_col * self.SUBSQUARE_SIZE) - self.SUBSQUARE_SIZE
             self.MOVE_SFX.play()
